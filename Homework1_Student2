@@ -1,0 +1,214 @@
+#Making a new directory named 'homework1'
+mkdir homework1
+
+#Which directory are we?
+pwd
+ ##home/student2
+
+#Change directory to 'homework1'
+cd homework1/
+
+#Checking if I am in the correct directory
+pwd
+ #/home/student2/homework1
+
+#Download a reference yeast genome as compressed archive to the current directory
+wget https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz
+ ##--2019-01-25 14:28:18--  https://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_Current_Release.tgz
+ ##Resolving downloads.yeastgenome.org (downloads.yeastgenome.org)... 171.67.205.104
+ ##Connecting to downloads.yeastgenome.org (downloads.yeastgenome.org)|171.67.205.104|:443... connected.
+ ##HTTP request sent, awaiting response... 200 OK
+ ##Length: 17657104 (17M) [application/x-gzip]
+ ##Saving to: 'S288C_reference_genome_Current_Release.tgz'
+ ##S288C_reference_ 100%[========>]  16.84M  7.05MB/s    in 2.4s
+ ##2019-01-25 14:28:21 (7.05 MB/s) - 'S288C_reference_genome_Current_Release.tgz' saved [17657104/17657104]
+
+#Decompress the archive (will create a new diretory). 
+ #This will download and extract the data to a directory called "S288C_reference_genome_R64-2-1_20150113"
+tar -xzvf S288C_reference_genome_Current_Release.tgz
+ ##S288C_reference_genome_R64-2-1_20150113/
+ ##S288C_reference_genome_R64-2-1_20150113/rna_coding_R64-2-1_20150113.fasta
+ ##S288C_reference_genome_R64-2-1_20150113/NotFeature_R64-2-1_20150113.fasta
+ ##S288C_reference_genome_R64-2-1_20150113/orf_coding_all_R64-2-1_20150113.fasta
+ ##S288C_reference_genome_R64-2-1_20150113/other_features_genomic_R64-2-1_20150113.fasta
+ ##S288C_reference_genome_R64-2-1_20150113/S288C_reference_sequence_R64-2-1_20150113.fsa
+ ##S288C_reference_genome_R64-2-1_20150113/gene_association_R64-2-1_20150113.sgd
+ ##S288C_reference_genome_R64-2-1_20150113/orf_trans_all_R64-2-1_20150113.fasta
+ ##S288C_reference_genome_R64-2-1_20150113/saccharomyces_cerevisiae_R64-2-1_20150113.gff
+
+#The directory named 'S288C_reference_genome_R64-2-1_20150113' is change to 'data'
+mv S288C_reference_genome_R64-2-1_20150113 data
+
+#We move to the directory 'data'
+cd data
+
+
+#------------TASK 1------------
+#How many genes are on chromosome II in saccharomyces_cerevisiae_R64-2-1_20150113.gff?
+
+#Counting the ammount of genes on chromosome II:
+ #grep -P = keeps every line that start with 'chrII' followed by a space '\t'
+ #wc -l = counts the lines that represent the number of genes that we have in chromosome II
+grep -P '^chrII\t' saccharomyces_cerevisiae_R64-2-1_20150113.gff | wc -l
+ ##1556
+
+#Answer: There are 1.556 genes in chromosome II.
+
+
+#------------TASK 2------------
+#Count GC content in S288C_reference_sequence_R64-2-1_20150113.fsa
+
+#The amount of each base is saved in a variable:
+ #grep -v '^>' = eliminates every line that start with '>'
+ #grep C -o = leave every character that match 'C' and sorted in a list. 
+ #wc -l = it counts how many lines are. Because the last function sort the characters as a list.
+total_C=$(grep -v "^>" S288C_reference_sequence_R64-2-1_20150113.fsa | grep -o C | wc -l)  #2.320.576
+total_G=$(grep -v "^>" S288C_reference_sequence_R64-2-1_20150113.fsa | grep -o G | wc -l)  #2.317.100
+total_A=$(grep -v "^>" S288C_reference_sequence_R64-2-1_20150113.fsa | grep -o A | wc -l)  #3.766.349
+total_T=$(grep -v "^>" S288C_reference_sequence_R64-2-1_20150113.fsa | grep -o T | wc -l)  #3.753.080
+
+#Total amount of nucleotides:
+ #tr -d "[:space:]" = eliminates any type of spaces
+ #wc -m = count the characters 
+total=$(grep -v "^>" S288C_reference_sequence_R64-2-1_20150113.fsa | tr -d "[:space:]" |  wc -m)  #12.157.105
+
+#Sum of the total C:s and G:s:
+total_GC=`expr $total_G + $total_C`
+echo $total_GC
+ ##4637676
+	
+#Sum of the total A:s and T:s:
+total_AT=`expr $total_A + $total_T`
+echo $total_AT
+ ##7519429
+
+#Calculating the ratio of GC content through the total amount of nucleotides:
+ #echo = show the line of calculus that is being done.
+ #scale 4 = gives the number of digits after the coma
+ #bc = display the number in decimals
+echo "scale=4;($total_GC / $total)"|bc
+ ##.3814
+
+#Answer: the ratio of GC content is of 38,14%
+
+
+#------------TASK 3------------
+#Download and decompress the ORFs of another strain (Y55) from 
+#https://downloads.yeastgenome.org/sequence/strains/Y55/Y55_SGD_2015_JRIF00000000/Y55_JRIF00000000_SGD_cds.fsa.gz
+#a) compare GC content in this file with the value in task 6.2. above 
+#(make sure you’re not also counting letters in the headers)
+#b) compare number of ORFs in this strain (basically all the enties in the Y55 
+#file you downloaded since that only contains ORFs) with the number in the reference genome 
+#(file orf_coding_all_R64-2-1_20150113.fasta)
+#c) count the common ORFs between this yeast strain and the reference we worked previously 
+#in sections 1 and 2. Note: remove strain suffixes from names in the non-reference strain.
+
+#Going to home directory
+cd
+
+#Download the file
+wget https://downloads.yeastgenome.org/sequence/strains/Y55/Y55_SGD_2015_JRIF00000000/Y55_JRIF00000000_SGD_cds.fsa.gz
+ ##--2019-01-30 20:36:51--  https://downloads.yeastgenome.org/sequence/strains/Y55/Y55_SGD_2015_JRIF00000000/Y55_JRIF00000000_SGD_cds.fsa.gz
+ ##Resolving downloads.yeastgenome.org (downloads.yeastgenome.org)... 171.67.205.104
+ ##Connecting to downloads.yeastgenome.org (downloads.yeastgenome.org)|171.67.205.104|:443... connected.
+ ##HTTP request sent, awaiting response... 200 OK
+ ##Length: 3323678 (3.2M) [application/x-gzip]
+ ##Saving to: 'Y55_JRIF00000000_SGD_cds.fsa.gz'
+ ##Y55_JRIF00000000_SG 100%[==================>]   3.17M  2.82MB/s    in 1.1s
+ ##2019-01-30 20:36:53 (2.82 MB/s) - 'Y55_JRIF00000000_SGD_cds.fsa.gz' saved [3323678/3323678]
+
+#Unziped the file
+gunzip Y55_JRIF00000000_SGD_cds.fsa.gz
+
+#Seeing how is inside.
+less Y55_JRIF00000000_SGD_cds.fsa
+ #This is how it starts. Observation: It has empty lines.
+	##>UNDEF_Y55 gi|696435221|gb|JRIF01000001.1| 1-1062 ORF Undefined
+	##ATGAAG
+	##TTGAACATTTCTTACCCAGTCAACGGGTCTCAAAAGACCTTCGAAATTGA
+	##TGATGAACACCGTATTCGTGTTTTCTTCGACAAGAGAATCGGTCAAGAAG
+	##TCGATGGTGAAGCCGTTGGTGATGAATTCAAGGGCTACGTCTTCAAGATC
+	##TCTGGTGGTAACGACAAACAAGGTTTCCCAATGAAGCAAGGTGTTTTGTT
+	##GCCAACTAGAATCAAGTTGTTGTTGACCAAGAACGTTTCTTGTTACAGAC
+	##CAAGACGTGATGGTGAAAGAAAGAGAAAGTCCGTCAGAGGTGCCATTGTT
+	##GGTCCAGATTTGGCTGTCTTGGCTTTGGTCATTGTCAAGAAGGGTGAACA
+	##AGAATTGGAAGGTCTAACTGACACTACTGTTCCAAAGAGATTGGGTCCAA
+	##AGAGAGCTAACAACATCAGAAAGTTCTTCGGTTTGTCCAAGGAAGATGAC
+	##GTTCGTGATTTCGTCATCAGAAGAGAAGTCACCAAGGGTGAAAAGACTTA
+	##CACCAAGGCTCCAAAGATCCAAAGATTGGTTACTCCTCAAAGATTGCAAA
+	##GAAAGAGACACCAAAGAGCTTTGAAGGTCAGAAACGCTCAAGCTCAAAGA
+	##GAAGCTGCTGCCGAATACGCTCAATTGTTGGCTAAGAGATTGTCTGAAAG
+	##AAAGGCTGAAAAGGCCGAAATCAGAAAGAGAAGAGCTTCTTCTTTGAAGG
+	##CTTAA
+
+#Amount of G, C, A and T present (respectively):
+  #grep -o -i "X" = "-o" means that it cuts the symbol "X", "-i" means that it can be ignore if the symbol is in capital letter or not.
+total_G_Y=$(grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "G" | wc -l)  #1.658.355
+total_C_Y=$(grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "C" | wc -l)  #1.533.622
+total_A_Y=$(grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "A" | wc -l)  #2.649.140
+total_T_Y=$(grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "T" | wc -l)  #2.232.816
+
+  #EXTRA------Alternative to calculate the amount of each one 
+	grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "G" | tr -d "[:space:]" | wc -m
+	 #1658355
+
+#Calculating the ratio of GC content:
+echo "scale=4;(($total_G_Y + $total_C_Y) / ($total_G_Y + $total_C_Y + $total_A_Y +$total_T_Y))" | bc
+ ##.3953
+
+  #OBSERVATION: if we delete all the nucleotides (ATCG) and delete all the spaces, we still have 4.725 characters (N, n, Y)
+  grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | tr -d "TAGC" | tr -d "tagc" | grep . | tr -d "[:space:]" | wc -m
+   ##4725
+  grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o "N" | wc -l
+   ##4723
+  grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o "n" | wc -l
+   ##1
+  grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o "Y" | wc -l}
+   ##1
+  #In this case (homework1) those symbols are taken away, without counting them.
+	
+#Answer a): The GC content is 39,53%, a bit more than the reference, 38,14%
+
+
+#Counting the number of ORF:s of Y55_JRIF00000000_SGD_cds.fsa
+grep "^>" Y55_JRIF00000000_SGD_cds.fsa | wc -l
+ ##5330
+
+  #OBSERVATION: There is one that does not say ORF, but looking inside is the "YER109C" that actually it represents an "ORF"
+  grep "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -v "ORF"
+   ##>YER109C_Y55 FLO8 gi|696435116|gb|JRIF01000035.1| 103767-106142 blocked_reading_frame Verified Transcription factor; 
+   ##required for flocculation, diploid filamentous growth, and haploid invasive growth; forms a heterodimer with Mss1p that 
+   ##interacts with the Swi/Snf complex during transcriptional activation of FLO1, FLO11, and STA1; genome reference strain 
+   ##S288C and most laboratory strains have a nonsense mutation in this gene
+   
+#Changing of directory to see the other file and count the ORF:s. 
+cd homework1
+cd data
+less orf_coding_all_R64-2-1_20150113.fasta
+grep "^>" orf_coding_all_R64-2-1_20150113.fasta |wc -l
+ ##6713
+	
+  #OBSERVATION: There are 106 "lines" that does not contain the word "ORF". For this exercise we are going to supose all of them are ORFs.
+	 #Like is showed above.
+	grep "ORF" orf_coding_all_R64-2-1_20150113.fasta |wc -l
+	 ##6607
+	grep "^>" orf_coding_all_R64-2-1_20150113.fasta | grep -v "ORF" | wc -l
+	 ##106
+
+#Answer b): The ORF:s in Y55_JRIF00000000_SGD_cds.fsa have a 25,95% (6.713/5.330) more than the reference.
+
+
+#Here the names of the genes of "Y55.." are extracted
+ #cut -d \_ -f 1 = cut the name of the gene. "\_" means: cut until you get to this symbol. "-f 1" means: cut from the first column.
+ #sort = order the data
+grep "^>" Y55_JRIF00000000_SGD_cds.fsa |cut -d \_ -f 1 | sort
+
+#Here the names of the genes of "orf.." are extracted
+grep "^>" orf_coding_all_R64-2-1_20150113.fasta | cut -d \  -f 1 | sort
+
+#comm -12 = comm gives three outputs (file1, file 2, in common). "-12" means: just give us the third output (the common part between the files)
+comm -12 <(grep "^>" /home/student2/data/orf_coding_all_R64-2-1_20150113.fasta | cut -d \  -f 1  | sort) <(grep "^>" /home/student2/Y55_JRIF00000000_SGD_cds.fsa | cut -d \_ -f 1 | sort) | wc -l
+ ##5168
+ 
+ #Answer c): There are 5.168 genes in common between the reference and the Y55.
+ 
