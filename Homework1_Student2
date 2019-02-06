@@ -141,6 +141,7 @@ less Y55_JRIF00000000_SGD_cds.fsa
 	##AAAGGCTGAAAAGGCCGAAATCAGAAAGAGAAGAGCTTCTTCTTTGAAGG
 	##CTTAA
 
+#----TASK 3A----
 #Amount of G, C, A and T present (respectively):
   #grep -o -i "X" = "-o" means that it cuts the symbol "X", "-i" means that it can be ignore if the symbol is in capital letter or not.
 total_G_Y=$(grep -v "^>" Y55_JRIF00000000_SGD_cds.fsa | grep -o -i "G" | wc -l)  #1.658.355
@@ -170,6 +171,7 @@ echo "scale=4;(($total_G_Y + $total_C_Y) / ($total_G_Y + $total_C_Y + $total_A_Y
 #Answer a): The GC content is 39,53%, a bit more than the reference, 38,14%
 
 
+#----TASK 3B----
 #Counting the number of ORF:s of Y55_JRIF00000000_SGD_cds.fsa
 grep "^>" Y55_JRIF00000000_SGD_cds.fsa | wc -l
  ##5330
@@ -198,6 +200,7 @@ grep "^>" orf_coding_all_R64-2-1_20150113.fasta |wc -l
 #Answer b): The ORF:s in Y55_JRIF00000000_SGD_cds.fsa have a 25,95% (6.713/5.330) more than the reference.
 
 
+#----TASK 3C----
 #Here the names of the genes of "Y55.." are extracted
  #cut -d \_ -f 1 = cut the name of the gene. "\_" means: cut until you get to this symbol. "-f 1" means: cut from the first column.
  #sort = order the data
